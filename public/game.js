@@ -5,7 +5,7 @@ const socket = io();
 // Constants for better physics tuning
 const PHYSICS = {
 	GRAVITY: 0.5,
-	JUMP_FORCE: -20,
+	JUMP_FORCE: -15,
 	CAMERA_THRESHOLD: canvas.height / 2
 };
 
@@ -100,9 +100,11 @@ function resetGame() {
 
 	// Generate initial platforms
 	for (let i = 0; i < 10; i++) {
+		const platformX = Math.random() * (canvas.width - 80)
 		gameState.platforms.push({
-			x: Math.random() * (canvas.width - 80),
+			x: platformX,
 			y: i * 60,
+			originX: platformX,
 			width: 80,
 			height: 10,
 			broken: false
@@ -111,7 +113,7 @@ function resetGame() {
 
 	gameState.platforms.push({
 		x: gameState.player.x - gameState.player.width / 2,
-		y: 500,
+		y: canvas.height - 20,
 		width: 80,
 		height: 10,
 		broken: false
@@ -168,14 +170,6 @@ function useItem(itemType) {
 	}
 }
 
-function autoPlay() {
-	const player = gameState.player;
-
-	// Find next platform
-	player.height
-}
-
-
 // Game loop
 function gameLoop() {
 	if (isHost && !gameState.gameOver) {
@@ -229,6 +223,19 @@ async function update() {
 		}
 	});
 
+	// Moving platforms
+	gameState.platforms = gameState.platforms.map(platform => {
+			if (platform.moving) {
+				if ((platform.moveSpeed > 0 && platform.x >= platform.originX + platform.moveRange / 2) || (platform.moveSpeed < 0 && platform.x < platform.originX - platform.moveRange / 2) || platform.x <= 0 || platform.x > canvas.width) {
+					// Switch only if it hit the moveRange / 2 or the border of the canvas
+					platform.moveSpeed = -platform.moveSpeed;
+				}
+				platform.x += platform.moveSpeed;
+			}
+			return platform
+		}
+	)
+
 	// Camera follow with smooth scrolling
 	if (player.y < PHYSICS.CAMERA_THRESHOLD) {
 		const diff = PHYSICS.CAMERA_THRESHOLD - player.y;
@@ -274,18 +281,27 @@ function generatePlatforms() {
 
 		highestPlatformY -= platformSpacing;
 
+		const platformX = Math.random() * (canvas.width - 80)
 		gameState.platforms.push({
-			x: Math.random() * (canvas.width - 80),
+			x: platformX,
 			y: highestPlatformY,
 			width: 80,
 			height: 10,
 			broken: false,
-			// Optional: Add moving platforms
+
 			moving: Math.random() < 0.3,
-			moveSpeed: (Math.random() - 0.5) * 2,
-			moveRange: 100
+			moveSpeed: (Math.random() - 0.5) * 5,
+			originX: platformX, // needed for moving platforms
+			moveRange: 200
 		});
 	}
+}
+
+function generateMonsters() {
+	// Remove monsters that are below the screen
+	gameState.monsters = gameState.monsters.filter(m => m.y < canvas.height + 100);
+
+
 }
 
 function render() {
