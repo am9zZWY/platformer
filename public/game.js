@@ -136,7 +136,17 @@ function init() {
 	document.querySelectorAll('.item-button').forEach(btn => {
 		btn.addEventListener('click', (e) => {
 			const item = e.target.getAttribute('data-item');
+			if (btn.classList.contains('item-cooldown')) {
+				return;
+			}
+
 			useItem(item);
+
+			// Cooldown
+			btn.classList.add('item-cooldown');
+			setTimeout(() => {
+				btn.classList.remove('item-cooldown');
+			}, 1000)
 		});
 	});
 
@@ -152,7 +162,7 @@ function startNewGame() {
 
 function joinSession() {
 	const inputSessionId = document.getElementById('sessionInput').value.trim();
-	if (inputSessionId) {
+	if (inputSessionId && inputSessionId !== sessionId) {
 		sessionId = inputSessionId;
 		socket.emit('joinSession', {sessionId});
 		isHost = false;
@@ -310,11 +320,13 @@ function render() {
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 	// Draw platforms
-	ctx.fillStyle = '#8B4513';
 	gameState.platforms.forEach(platform => {
 		if (!platform.broken) {
-			ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+			ctx.fillStyle = '#8B4513';
+		} else {
+			ctx.fillStyle = 'rgba(71,61,55,0.36)';
 		}
+		ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
 	});
 
 	// Draw monsters
@@ -430,6 +442,9 @@ socket.on('itemUsed', (data) => {
 				// Push player sideways
 				gameState.player.x += (Math.random() - 0.5) * 100;
 				break;
+			case 'teleport':
+				// Teleport the player on top of the screen
+				gameState.player.y = (Math.random() - 0.5) * 100;
 		}
 	}
 });
