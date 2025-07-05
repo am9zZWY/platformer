@@ -20,10 +20,9 @@ const client = new OAuth2Client(CLIENT_ID);
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use('/', express.static(__dirname, {index: 'index.html'}));
 
 // In-memory storage (replace with database in production)
-const sessions = new Map();
 const highScores = [];
 const users = new Map();
 
