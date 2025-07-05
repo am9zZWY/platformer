@@ -28,6 +28,12 @@ let gameState = {
   cameraY: 0,
 };
 
+// To limit the fps!
+const FPS = 60;
+const FPS_INTERVAL = 1000 / FPS;
+let then = window.performance.now()
+let elapsed;
+
 let peer = null;
 let hostConnection = null; // For non-hosts to connect to host
 let playerConnections = new Map(); // For host to track all players
@@ -316,18 +322,27 @@ function useItem(itemType) {
 
 // Game loop
 function gameLoop() {
-  if (isHost && !gameState.gameOver) {
-    update();
-    render();
+  let now = window.performance.now();
+  elapsed = now - then;
 
-    // Send game state to spectators
-    broadcast({
-      type: "gameStateUpdate",
-      data: { gameState },
-    });
-  } else if (!isHost) {
-    // Spectators just render the received game state
-    render();
+  // Draw only if a specific number of frames has passed
+  // https://stackoverflow.com/a/19772220
+  if (elapsed > FPS_INTERVAL) {
+    then = now - (elapsed % FPS_INTERVAL);
+
+    if (isHost && !gameState.gameOver) {
+      update();
+      render();
+
+      // Send game state to spectators
+      broadcast({
+        type: "gameStateUpdate",
+        data: { gameState },
+      });
+    } else if (!isHost) {
+      // Spectators just render the received game state
+      render();
+    }
   }
 
   requestAnimationFrame(gameLoop);
