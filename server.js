@@ -61,67 +61,6 @@ app.post('/api/highscores', (req, res) => {
 	res.json({ success: true });
 });
 
-// Socket.io events
-io.on('connection', (socket) => {
-	console.log('New client connected:', socket.id);
-
-	socket.on('createSession', (data) => {
-		const sessionId = Math.random().toString(36).substring(7);
-		sessions.set(sessionId, {
-			host: socket.id,
-			players: [socket.id],
-			gameState: data.gameState
-		});
-		socket.join(sessionId);
-		socket.emit('sessionCreated', { sessionId });
-	});
-
-	socket.on('joinSession', (data) => {
-		const { sessionId } = data;
-		const session = sessions.get(sessionId);
-
-		if (session) {
-			session.players.push(socket.id);
-			socket.join(sessionId);
-			socket.emit('sessionJoined', { sessionId, isHost: false });
-			io.to(sessionId).emit('playerJoined', { playerId: socket.id });
-		} else {
-			socket.emit('error', { message: 'Session not found' });
-		}
-	});
-
-	socket.on('gameUpdate', (data) => {
-		const { sessionId, gameState } = data;
-		const session = sessions.get(sessionId);
-
-		if (session && session.host === socket.id) {
-			session.gameState = gameState;
-			socket.to(sessionId).emit('gameStateUpdate', { gameState });
-		}
-	});
-
-	socket.on('useItem', (data) => {
-		const { sessionId, item, position } = data;
-		io.to(sessionId).emit('itemUsed', { item, position, userId: socket.id });
-	});
-
-	socket.on('disconnect', () => {
-		console.log('Client disconnected:', socket.id);
-		// Clean up sessions
-		sessions.forEach((session, sessionId) => {
-			if (session.host === socket.id) {
-				io.to(sessionId).emit('sessionEnded');
-				sessions.delete(sessionId);
-			} else {
-				const index = session.players.indexOf(socket.id);
-				if (index > -1) {
-					session.players.splice(index, 1);
-				}
-			}
-		});
-	});
-});
-
 server.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`);
 });

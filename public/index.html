@@ -6,7 +6,7 @@
     <title>Platform Jumper Multiplayer</title>
     <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -156,12 +156,12 @@
 
     <div class="controls">
         <button id="startBtn">Start New Game</button>
-        <input type="text" id="sessionInput" placeholder="Enter Session ID">
+        <input type="text" id="hostPeerIdInput" placeholder="Enter Host Peer ID">
         <button id="joinBtn">Join Session</button>
     </div>
 
     <div id="sessionInfo" style="display: none;">
-        Session ID: <strong id="sessionId"></strong>
+        Host Peer ID: <strong id="myPeerId"></strong>
     </div>
 
     <canvas id="gameCanvas" width="400" height="600"></canvas>
