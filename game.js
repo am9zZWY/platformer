@@ -305,7 +305,7 @@ function useItem(itemType) {
       type: "useItem",
       data: {
         item: itemType,
-        position: position || {
+        position: {
           x: Math.random() * canvas.width,
           y: gameState.cameraY,
         },
