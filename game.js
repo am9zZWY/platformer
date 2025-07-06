@@ -283,16 +283,16 @@ function initGame() {
 
 	// Button controls
 	document.getElementById("gameControls").style.display = "block";
-	document.getElementById("gameControlLeft").addEventListener("mousedown", (e) => {
+	document.getElementById("gameControlLeft").addEventListener("pointerdown", (e) => {
 		keys['ArrowLeft'] = true;
 	});
-	document.getElementById("gameControlLeft").addEventListener("mouseup", (e) => {
+	document.getElementById("gameControlLeft").addEventListener("pointerup", (e) => {
 		keys['ArrowLeft'] = false;
 	});
-	document.getElementById("gameControlRight").addEventListener("mousedown", (e) => {
+	document.getElementById("gameControlRight").addEventListener("pointerdown", (e) => {
 		keys['ArrowRight'] = true;
 	});
-	document.getElementById("gameControlRight").addEventListener("mouseup", (e) => {
+	document.getElementById("gameControlRight").addEventListener("pointerup", (e) => {
 		keys['ArrowRight'] = false;
 	});
 
