@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Platform Jumper Multiplayer</title>
     <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
     <style>
         * {
@@ -267,18 +266,11 @@
 <div id="gameContainer">
     <h1>Platform Jumper Multiplayer</h1>
 
-    <div id="loginPanel">
-        <div id="g_id_onload"
-             data-client_id="YOUR_GOOGLE_CLIENT_ID"
-             data-callback="handleCredentialResponse">
-        </div>
-        <div class="g_id_signin" data-type="standard"></div>
-    </div>
-
     <div id="userInfo" style="display: none;"></div>
 
     <div class="controls">
         <button id="startBtn">Start New Game</button>
+        <input type="text" id="nameInput" placeholder="Enter Name">
         <input type="text" id="hostPeerIdInput" placeholder="Enter Host Peer ID">
         <button id="joinBtn">Join Session</button>
     </div>
@@ -291,13 +283,13 @@
         <canvas id="gameCanvas" width="400" height="600"></canvas>
     </div>
 
-    <div id="gameControls" style="display: none;">
+    <div id="gameControls">
         <button id="gameControlLeft">Left</button>
         <button id="gameControlRight">Right</button>
     </div>
 
     <div id="itemsPanel">
-        <h3>Use Items (Spectator Mode)</h3>
+        <h3>Use Items</h3>
         <div class="items-grid">
             <button class="item-button" data-item="bomb">💣</button>
             <button class="item-button" data-item="monster">👾</button>
@@ -314,7 +306,6 @@
 </div>
 
 <script>
-	// Add canvas scaling logic
 	window.addEventListener('load', function () {
 		const canvas = document.getElementById('gameCanvas');
 		const wrapper = document.querySelector('.canvas-wrapper');
@@ -337,8 +328,8 @@
 		window.addEventListener('resize', resizeCanvas);
 		window.addEventListener('orientationchange', resizeCanvas);
 	});
-
-	// Prevent double-tap zoom on game controls
+</script>
+<script>
 	document.querySelectorAll('#gameControls button, .item-button').forEach(button => {
 		button.addEventListener('touchend', function (e) {
 			e.preventDefault();
