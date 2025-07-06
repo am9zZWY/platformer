@@ -277,10 +277,12 @@ function resetGame() {
 function initGame() {
 	resetGame();
 
-	// Event listeners
+	// Key controls
 	document.addEventListener("keydown", (e) => (keys[e.key] = true));
 	document.addEventListener("keyup", (e) => (keys[e.key] = false));
 
+	// Button controls
+	document.getElementById("gameControls").style.display = "block";
 	document.getElementById("gameControlLeft").addEventListener("mousedown", (e) => {
 		keys['ArrowLeft'] = true;
 	});
@@ -293,8 +295,8 @@ function initGame() {
 	document.getElementById("gameControlRight").addEventListener("mouseup", (e) => {
 		keys['ArrowRight'] = false;
 	});
-	document.getElementById("gameControls").style.display = "block";
 
+	// Buttons
 	document.getElementById("startBtn").addEventListener("click", resetGame);
 	document.getElementById("joinBtn").addEventListener("click", joinSession);
 
