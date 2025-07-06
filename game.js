@@ -137,7 +137,15 @@ function joinSession() {
 	hostConnection.on("data", (message) => {
 		switch (message.type) {
 			case "sessionJoined":
+				const lowestPeerIndex = argMax(message.data.gameState.peers.map(p => p.y));
+				const lowestPeer = message.data.gameState.peers[lowestPeerIndex];
+
+				const player = gameState.player;
+				player.x = lowestPeer.x;
+				player.y = lowestPeer.y;
+
 				Object.assign(gameState, {
+					player: player,
 					platforms: message.data.gameState.platforms,
 					monsters: message.data.gameState.monsters,
 				});
@@ -234,6 +242,11 @@ function resetGame() {
 function initGame() {
 	resetGame();
 
+	// Set name
+	document.getElementById("nameInput").addEventListener("keyup", (event) => {
+		gameState.player.name = event.target.value;
+	})
+
 	// Key controls
 	document.addEventListener("keydown", (e) => (keys[e.key] = true));
 	document.addEventListener("keyup", (e) => (keys[e.key] = false));
@@ -298,7 +311,7 @@ function useItem(itemType) {
 function handleItem(data) {
 	let randomPlayer = gameState.player
 	if (Math.random() > 0.5) {
-		randomPlayer = getRandomItem(gameState.peers);
+		randomPlayer = getRandomItem(gameState.peers.filter(p => !p.gameOver));
 	}
 
 	switch (data.item) {
@@ -332,6 +345,7 @@ function handleItem(data) {
 		case "teleport":
 			// Teleport the player on top of the screen
 			randomPlayer.y = (Math.random() - 0.5) * 100;
+			break;
 	}
 }
 
